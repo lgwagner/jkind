@@ -19,11 +19,11 @@ public class JRealizability {
 			String filename = settings.filename;
 			Program program = Main.parseLustre(filename);
 
-			StaticAnalyzer.check(program, SolverOption.Z3);
-			checkRealizablitityQuery(program);
+			StaticAnalyzer.check(program, SolverOption.Z3, settings);
+			realizabilitySpecificChecks(program);
 
-			Node main = Translate.translate(program);
-			Specification spec = new Specification(main);
+			program = Translate.translate(program);
+			Specification spec = new Specification(program);
 			int exitCode = new RealizabilityDirector(settings, spec).run();
 			System.exit(exitCode); // Kills all threads
 		} catch (Throwable t) {
@@ -32,16 +32,26 @@ public class JRealizability {
 		}
 	}
 
-	private static void checkRealizablitityQuery(Program program) {
+	private static void realizabilitySpecificChecks(Program program) {
 		Node main = program.getMainNode();
 
 		boolean valid = true;
+		valid = valid && checkNoFunctions(program);
 		valid = valid && realizablitityQueryExists(main);
 		valid = valid && realizablitityInputsNodeInputs(main);
 		valid = valid && realizablitityInputsUnique(main);
 
 		if (!valid) {
 			System.exit(ExitCodes.STATIC_ANALYSIS_ERROR);
+		}
+	}
+
+	private static boolean checkNoFunctions(Program program) {
+		if (!program.functions.isEmpty()) {
+			StdErr.error("functions are not supported in JRealizability");
+			return false;
+		} else {
+			return true;
 		}
 	}
 

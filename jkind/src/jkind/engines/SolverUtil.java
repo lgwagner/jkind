@@ -1,8 +1,9 @@
 package jkind.engines;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import jkind.JKindException;
 import jkind.SolverOption;
@@ -28,7 +29,7 @@ public class SolverUtil {
 		case Z3:
 			return new Z3Solver(scratchBase, LinearChecker.isLinear(node));
 		case YICES2:
-			return new Yices2Solver(scratchBase);
+			return new Yices2Solver(scratchBase, LinearChecker.isLinear(node));
 		case MATHSAT:
 			return new MathSatSolver(scratchBase);
 		case SMTINTERPOL:
@@ -52,8 +53,6 @@ public class SolverUtil {
 	}
 
 	public static List<SolverOption> availableSolvers() {
-		return Arrays.stream(SolverOption.values()).filter(x -> solverIsAvailable(x))
-				.collect(Collectors.toList());
+		return Arrays.stream(SolverOption.values()).filter(x -> solverIsAvailable(x)).collect(toList());
 	}
-
 }
