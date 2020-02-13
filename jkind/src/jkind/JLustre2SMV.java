@@ -1,0 +1,67 @@
+package jkind;
+
+import java.io.File;
+
+import jkind.analysis.StaticAnalyzer;
+import jkind.jlustre2kind.KindEncodeIdsVisitor;
+import jkind.jlustre2kind.ObfuscateIdsVisitor;
+import jkind.lustre.Node;
+import jkind.lustre.Program;
+import jkind.lustre.builders.NodeBuilder;
+import jkind.lustre.builders.ProgramBuilder;
+import jkind.slicing.DependencyMap;
+import jkind.slicing.LustreSlicer;
+import jkind.translation.RemoveEnumTypes;
+import jkind.translation.Translate;
+import jkind.util.Util;
+
+public class JLustre2SMV {
+	public static void main(String args[]) {
+		try {
+			JLustre2SMVSettings settings = JLustre2SMVArgumentParser.parse(args);
+			String filename = settings.filename;
+
+			if (!filename.toLowerCase().endsWith(".lus")) {
+				StdErr.error("input file must have .lus extension");
+			}
+			String outFilename = filename.substring(0, filename.length() - 4) + ".kind.lus";
+
+			Program program = Main.parseLustre(filename);
+			StaticAnalyzer.check(program, SolverOption.Z3, settings);
+			
+			//TODO: We need to think about how readable we want the SMV translation to be.
+
+			//if we do this, it will be the simplest translation but probably not readable SMV
+			program = Translate.translate(program);		
+			
+			//do we need to do this for SMV?
+			program = RemoveEnumTypes.program(program);	
+			//TODO: Distribute Pres?
+			//TODO: FlattnePres?
+
+			//TODO: Think about slicing.
+			Node main = program.getMainNode();
+			main = LustreSlicer.slice(main, new DependencyMap(main, main.properties, program.functions));
+
+			if (settings.encode) {
+				main = new KindEncodeIdsVisitor().visit(main);
+			}
+			
+			if (settings.obfuscate) {
+				main = new ObfuscateIdsVisitor().visit(main);
+				main = new NodeBuilder(main).setId("main").build();
+			}
+			
+			program = new ProgramBuilder(program).clearNodes().addNode(main).build();
+			if (settings.stdout) {
+				System.out.println(program.toString());
+			} else {
+				Util.writeToFile(program.toString(), new File(outFilename));
+				System.out.println("Wrote " + outFilename);
+			}
+		} catch (Throwable t) {
+			t.printStackTrace();
+			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
+		}
+	}
+}
