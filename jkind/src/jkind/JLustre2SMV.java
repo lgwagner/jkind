@@ -24,22 +24,24 @@ public class JLustre2SMV {
 			if (!filename.toLowerCase().endsWith(".lus")) {
 				StdErr.error("input file must have .lus extension");
 			}
-			String outFilename = filename.substring(0, filename.length() - 4) + ".kind.lus";
+			String outFilename = filename.substring(0, filename.length() - 4) + ".smv";
 
 			Program program = Main.parseLustre(filename);
 			StaticAnalyzer.check(program, SolverOption.Z3, settings);
 			
 			//TODO: We need to think about how readable we want the SMV translation to be.
-
-			//if we do this, it will be the simplest translation but probably not readable SMV
 			program = Translate.translate(program);		
-			
-			//do we need to do this for SMV?
 			program = RemoveEnumTypes.program(program);	
-			//TODO: Distribute Pres?
-			//TODO: FlattnePres?
-
-			//TODO: Think about slicing.
+			
+			/* At this point the program has the following structure *
+			 * 
+			 * 1. There are no constants
+			 * 2. There are no typedefs
+			 * 3. There could be functions
+			 * 4. There is one node called main.
+			 */
+			
+			//TODO: Think about slicing but I don't think we need this.
 			Node main = program.getMainNode();
 			main = LustreSlicer.slice(main, new DependencyMap(main, main.properties, program.functions));
 
@@ -51,6 +53,9 @@ public class JLustre2SMV {
 				main = new ObfuscateIdsVisitor().visit(main);
 				main = new NodeBuilder(main).setId("main").build();
 			}
+			
+			//do our translation to SMV
+			//SMVProgram smvp = SMVTranslate.translate(program);
 			
 			program = new ProgramBuilder(program).clearNodes().addNode(main).build();
 			if (settings.stdout) {
