@@ -1,19 +1,30 @@
 package jkind.smv;
 
-public class SMVModule {
+import java.util.List;
 
-	public final String name;
-//	public List<SMVModuleParameter> parameters;
-//	public List<SMVIVarDeclaration> inputs;
-//	public List<SMVFrozenVarDeclaration> frozens;
-//	public List<SMVDefineDeclaration> defines;
-//	public List<SMVConstantDeclaration> constants;
-//	public List<SMVAssignConstraint> assigns;
-//	public List<SMVTransitionConstraint> transitions;
-//	public List<SMVInitConstraint> initializations;
-//	public List<SMVInvarConstraint> invariants;
+import jkind.Assert;
+import jkind.smv.visitors.SMVAstVisitor;
 
-	public SMVModule(String name) {
-		this.name = name;
+public class SMVModule extends SMVAst {
+
+	public final String id;
+	public final List<SMVVarDecl> inputs;
+	public final List<SMVVarDecl> outputs;
+	public final List<SMVVarDecl> locals;
+	public final List<SMVEquation> equations;
+
+	public SMVModule(String id, List<SMVVarDecl> inputs, List<SMVVarDecl> outputs, List<SMVVarDecl> locals, List<SMVEquation> sMVEquations) {
+
+		Assert.isNotNull(id);
+		this.id = id;
+		this.inputs = inputs;
+		this.outputs = outputs;
+		this.locals = locals;
+		this.equations = sMVEquations;
+	}
+
+	@Override
+	public <T, S extends T> T accept(SMVAstVisitor<T, S> visitor) {
+		return visitor.visit(this);
 	}
 }
