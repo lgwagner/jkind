@@ -11,6 +11,12 @@ import jkind.lustre.builders.NodeBuilder;
 import jkind.lustre.builders.ProgramBuilder;
 import jkind.slicing.DependencyMap;
 import jkind.slicing.LustreSlicer;
+import jkind.smv.SMVModule;
+import jkind.smv.SMVProgram;
+import jkind.smv.builders.SMVModuleBuilder;
+import jkind.smv.builders.SMVProgramBuilder;
+import jkind.smv.visitors.SMV_Lus2SMV_Visitor;
+import jkind.smv.visitors.SMV_Node2Module_Visitor;
 import jkind.translation.RemoveEnumTypes;
 import jkind.translation.Translate;
 import jkind.util.Util;
@@ -57,13 +63,18 @@ public class JLustre2SMV {
 			//do our translation to SMV
 			//SMVProgram smvp = SMVTranslate.translate(program);
 			
-			program = new ProgramBuilder(program).clearNodes().addNode(main).build();
-			if (settings.stdout) {
-				System.out.println(program.toString());
-			} else {
-				Util.writeToFile(program.toString(), new File(outFilename));
-				System.out.println("Wrote " + outFilename);
-			}
+			SMVProgram smvp = new SMVProgramBuilder(program).build();
+			SMVModule m1 = new SMV_Node2Module_Visitor().visit(main);
+			smvp = new SMVProgramBuilder(smvp).addModule(m1).build();
+			Util.writeToFile(smvp.toString(), new File(outFilename));
+			
+//			program = new ProgramBuilder(program).clearNodes().addNode(main).build();
+//			if (settings.stdout) {
+//				System.out.println(program.toString());
+//			} else {
+//				Util.writeToFile(program.toString(), new File(outFilename));
+//				System.out.println("Wrote " + outFilename);
+//			}
 		} catch (Throwable t) {
 			t.printStackTrace();
 			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);

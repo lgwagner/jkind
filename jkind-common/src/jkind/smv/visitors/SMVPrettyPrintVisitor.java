@@ -10,8 +10,10 @@ import jkind.smv.SMVBoolExpr;
 import jkind.smv.SMVEquation;
 import jkind.smv.SMVExpr;
 import jkind.smv.SMVIdExpr;
+import jkind.smv.SMVInitIdExpr;
 import jkind.smv.SMVIntExpr;
 import jkind.smv.SMVModule;
+import jkind.smv.SMVNextIdExpr;
 import jkind.smv.SMVProgram;
 import jkind.smv.SMVType;
 import jkind.smv.SMVUnaryExpr;
@@ -59,7 +61,7 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor {
 		write("MODULE ");
 		write(module.id);
 		newline();
-		varDecls(module.inputs);
+		inputVarDecls(module.inputs);
 		newline();
 		varDecls(module.outputs);
 		newline();
@@ -89,6 +91,20 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor {
 		return null;
 	}
 
+	
+	
+	private void inputVarDecls(List<SMVVarDecl> inputs) {
+		Iterator<SMVVarDecl> iterator = inputs.iterator();
+		while (iterator.hasNext()) {
+			write("  IVAR ");
+			iterator.next().accept(this);
+			if (iterator.hasNext()) {
+				write(";");
+				newline();
+			}
+		}
+	}
+	
 	private void varDecls(List<SMVVarDecl> inputs) {
 		Iterator<SMVVarDecl> iterator = inputs.iterator();
 		while (iterator.hasNext()) {
@@ -166,6 +182,18 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor {
 
 	@Override
 	public Object visit(SMVUnaryExpr e) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object visit(SMVInitIdExpr e) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object visit(SMVNextIdExpr e) {
 		// TODO Auto-generated method stub
 		return null;
 	}

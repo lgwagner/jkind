@@ -23,6 +23,16 @@ public class SMVEquation extends SMVAst{
 		this.expr = expr;
 	}
 
+	public SMVEquation(SMVInitIdExpr smvInitIdExpr, SMVExpr expr) {
+		this.lhs = Collections.singletonList(new SMVIdExpr(smvInitIdExpr.id));
+		this.expr = expr;
+	}
+	
+	public SMVEquation(SMVNextIdExpr smvNextIdExpr, SMVExpr expr) {
+		this.lhs = Collections.singletonList(new SMVIdExpr(smvNextIdExpr.id));
+		this.expr = expr;
+	}
+
 	@Override
 	public <T, S extends T> T accept(SMVAstVisitor<T, S> visitor) {
 		return visitor.visit(this);

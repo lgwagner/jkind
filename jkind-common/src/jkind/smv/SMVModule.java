@@ -12,6 +12,7 @@ public class SMVModule extends SMVAst {
 	public final List<SMVVarDecl> outputs;
 	public final List<SMVVarDecl> locals;
 	public final List<SMVEquation> equations;
+	//public final List<String> properties;
 
 	public SMVModule(String id, List<SMVVarDecl> inputs, List<SMVVarDecl> outputs, List<SMVVarDecl> locals, List<SMVEquation> sMVEquations) {
 
@@ -21,6 +22,7 @@ public class SMVModule extends SMVAst {
 		this.outputs = outputs;
 		this.locals = locals;
 		this.equations = sMVEquations;
+		//this.properties = properties;
 	}
 
 	@Override
