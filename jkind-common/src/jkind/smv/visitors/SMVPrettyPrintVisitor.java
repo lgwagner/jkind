@@ -10,12 +10,12 @@ import jkind.smv.SMVBoolExpr;
 import jkind.smv.SMVEquation;
 import jkind.smv.SMVExpr;
 import jkind.smv.SMVIdExpr;
+import jkind.smv.SMVCaseExpr;
 import jkind.smv.SMVInitIdExpr;
 import jkind.smv.SMVIntExpr;
 import jkind.smv.SMVModule;
 import jkind.smv.SMVNextIdExpr;
 import jkind.smv.SMVProgram;
-import jkind.smv.SMVType;
 import jkind.smv.SMVUnaryExpr;
 import jkind.smv.SMVVarDecl;
 
@@ -54,8 +54,6 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor {
 		return null;
 	}
 
-	
-	
 	@Override
 	public Void visit(SMVModule module) {
 		write("MODULE ");
@@ -75,7 +73,7 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor {
 			newline();
 			newline();
 		}
-		
+
 		return null;
 	}
 
@@ -91,8 +89,6 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor {
 		return null;
 	}
 
-	
-	
 	private void inputVarDecls(List<SMVVarDecl> inputs) {
 		Iterator<SMVVarDecl> iterator = inputs.iterator();
 		while (iterator.hasNext()) {
@@ -104,7 +100,7 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor {
 			}
 		}
 	}
-	
+
 	private void varDecls(List<SMVVarDecl> inputs) {
 		Iterator<SMVVarDecl> iterator = inputs.iterator();
 		while (iterator.hasNext()) {
@@ -145,11 +141,11 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor {
 		write(";");
 		return null;
 	}
-	
+
 	public void expr(SMVExpr e) {
 		e.accept(this);
 	}
-	
+
 	@Override
 	public Void visit(SMVBinaryExpr e) {
 		write("(");
@@ -167,13 +163,13 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor {
 		write(Boolean.toString(e.value));
 		return null;
 	}
-	
+
 	@Override
 	public Void visit(SMVIdExpr e) {
 		write(e.id);
 		return null;
 	}
-	
+
 	@Override
 	public Void visit(SMVIntExpr e) {
 		write(e.value);
@@ -197,7 +193,27 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	
+
+	@Override
+	public Object visit(SMVCaseExpr e) {
+		newline();
+		write("		");
+		write("(case ");
+		newline();
+		write("			");
+		expr(e.cond);
+		write(" : ");
+		expr(e.thenExpr);
+		write(";");
+		newline();
+		write("			");
+		write(" TRUE : ");
+		expr(e.elseExpr);
+		write(";");
+		newline();
+		write("		");
+		write("esac)");
+		return null;
+	}
 
 }

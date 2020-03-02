@@ -5,6 +5,7 @@ import jkind.lustre.BoolExpr;
 import jkind.smv.SMVBinaryExpr;
 import jkind.smv.SMVBoolExpr;
 import jkind.smv.SMVIdExpr;
+import jkind.smv.SMVCaseExpr;
 import jkind.smv.SMVInitIdExpr;
 import jkind.smv.SMVIntExpr;
 import jkind.smv.SMVNextIdExpr;
@@ -23,7 +24,7 @@ public interface SMVExprVisitor<T> {
 	public T visit(SMVIdExpr e);
 	public T visit(SMVInitIdExpr e);
 	public T visit(SMVNextIdExpr e);
-//	public T visit(IfThenElseExpr e);
+	public T visit(SMVCaseExpr e);
 	public T visit(SMVIntExpr e);
 //	public T visit(SMVNodeCallExpr e);
 //	public T visit(SMVRealExpr e);
