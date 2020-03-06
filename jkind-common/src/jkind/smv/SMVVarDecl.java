@@ -1,6 +1,8 @@
 package jkind.smv;
 
 import jkind.Assert;
+import jkind.lustre.SubrangeIntType;
+import jkind.smv.util.SMVUtil;
 import jkind.smv.visitors.SMVAstVisitor;
 
 public class SMVVarDecl extends SMVAst {
@@ -10,10 +12,18 @@ public class SMVVarDecl extends SMVAst {
 	public SMVVarDecl(String id, SMVType type) {
 		Assert.isNotNull(id);
 		Assert.isNotNull(type);
-		this.id = id;
+		
+		this.id = SMVUtil.removeIllegalChar(id);
 		this.type = type;
 	}
 
+	public SMVVarDecl(String id, SMVSubrangeIntType type) {
+		Assert.isNotNull(id);
+		Assert.isNotNull(type);
+		
+		this.id = SMVUtil.removeIllegalChar(id);
+		this.type = type;
+	}
 
 	@Override
 	public <T, S extends T> T accept(SMVAstVisitor<T, S> visitor) {

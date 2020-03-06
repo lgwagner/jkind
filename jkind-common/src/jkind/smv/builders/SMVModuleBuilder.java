@@ -75,6 +75,6 @@ public class SMVModuleBuilder {
 	}
 
 	public SMVModule build() {
-		return new SMVModule(id, inputs, outputs, locals, null);
+		return new SMVModule(id, inputs, outputs, locals, null, null);
 	}
 }

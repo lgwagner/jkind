@@ -17,6 +17,7 @@ import jkind.smv.SMVModule;
 import jkind.smv.SMVNextIdExpr;
 import jkind.smv.SMVProgram;
 import jkind.smv.SMVUnaryExpr;
+import jkind.smv.SMVUnaryOp;
 import jkind.smv.SMVVarDecl;
 
 public class SMVPrettyPrintVisitor implements SMVAstVisitor {
@@ -73,7 +74,14 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor {
 			newline();
 			newline();
 		}
-
+		
+		if (!module.sMVSpecifications.isEmpty()) {
+			for (String property : module.sMVSpecifications) {
+				property(property);
+			}
+			newline();
+		}
+		
 		return null;
 	}
 
@@ -94,8 +102,8 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor {
 		while (iterator.hasNext()) {
 			write("  IVAR ");
 			iterator.next().accept(this);
+			write(";");
 			if (iterator.hasNext()) {
-				write(";");
 				newline();
 			}
 		}
@@ -106,8 +114,8 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor {
 		while (iterator.hasNext()) {
 			write("  VAR ");
 			iterator.next().accept(this);
+			write(";");
 			if (iterator.hasNext()) {
-				write(";");
 				newline();
 			}
 		}
@@ -115,7 +123,6 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor {
 
 	@Override
 	public Object visit(SMVVarDecl smvVarDecl) {
-		// TODO Auto-generated method stub
 		write(smvVarDecl.id);
 		write(" : ");
 		write(smvVarDecl.type);
@@ -135,8 +142,7 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor {
 				}
 			}
 		}
-
-		write(" = ");
+		write(" := ");
 		expr(smvEquation.expr);
 		write(";");
 		return null;
@@ -146,6 +152,12 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor {
 		e.accept(this);
 	}
 
+	protected void property(String s) {
+		write("INVARSPEC !");
+		write(s);
+		newline();
+	}
+	
 	@Override
 	public Void visit(SMVBinaryExpr e) {
 		write("(");
@@ -178,7 +190,13 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor {
 
 	@Override
 	public Object visit(SMVUnaryExpr e) {
-		// TODO Auto-generated method stub
+		write("(");
+		write(e.op);
+		if (e.op != SMVUnaryOp.SMVNEGATIVE) {
+			write(" ");
+		}
+		expr(e.expr);
+		write(")");
 		return null;
 	}
 
