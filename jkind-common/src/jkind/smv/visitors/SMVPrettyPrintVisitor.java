@@ -168,7 +168,6 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor<Void, Void> {
 
 		}
 		write(str);
-
 		return null;
 	}
 
