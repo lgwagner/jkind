@@ -3,14 +3,12 @@ package jkind.smv.visitors;
 import java.util.Iterator;
 import java.util.List;
 
-import jkind.lustre.Node;
-import jkind.lustre.Program;
 import jkind.smv.SMVBinaryExpr;
 import jkind.smv.SMVBoolExpr;
+import jkind.smv.SMVCaseExpr;
 import jkind.smv.SMVEquation;
 import jkind.smv.SMVExpr;
 import jkind.smv.SMVIdExpr;
-import jkind.smv.SMVCaseExpr;
 import jkind.smv.SMVInitIdExpr;
 import jkind.smv.SMVIntExpr;
 import jkind.smv.SMVModule;
@@ -20,7 +18,7 @@ import jkind.smv.SMVUnaryExpr;
 import jkind.smv.SMVUnaryOp;
 import jkind.smv.SMVVarDecl;
 
-public class SMVPrettyPrintVisitor implements SMVAstVisitor {
+public class SMVPrettyPrintVisitor implements SMVAstVisitor<Void, Void> {
 	private StringBuilder sb = new StringBuilder();
 	private String main;
 
@@ -42,7 +40,6 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor {
 	@Override
 	public Void visit(SMVProgram program) {
 		main = program.main;
-
 		Iterator<SMVModule> iterator = program.modules.iterator();
 		while (iterator.hasNext()) {
 			iterator.next().accept(this);
@@ -74,33 +71,21 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor {
 			newline();
 			newline();
 		}
-		
+
 		if (!module.sMVSpecifications.isEmpty()) {
 			for (String property : module.sMVSpecifications) {
 				property(property);
 			}
 			newline();
 		}
-		
-		return null;
-	}
 
-	@Override
-	public Object visit(Program program) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Object visit(Node node) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	private void inputVarDecls(List<SMVVarDecl> inputs) {
 		Iterator<SMVVarDecl> iterator = inputs.iterator();
 		while (iterator.hasNext()) {
-			write("  IVAR ");
+			write("  VAR ");
 			iterator.next().accept(this);
 			write(";");
 			if (iterator.hasNext()) {
@@ -122,7 +107,7 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor {
 	}
 
 	@Override
-	public Object visit(SMVVarDecl smvVarDecl) {
+	public Void visit(SMVVarDecl smvVarDecl) {
 		write(smvVarDecl.id);
 		write(" : ");
 		write(smvVarDecl.type);
@@ -130,7 +115,7 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor {
 	}
 
 	@Override
-	public Object visit(SMVEquation smvEquation) {
+	public Void visit(SMVEquation smvEquation) {
 		if (smvEquation.lhs.isEmpty()) {
 			write("()");
 		} else {
@@ -153,11 +138,12 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor {
 	}
 
 	protected void property(String s) {
-		write("INVARSPEC !");
+		write("LTLSPEC G(");
 		write(s);
+		write(")");
 		newline();
 	}
-	
+
 	@Override
 	public Void visit(SMVBinaryExpr e) {
 		write("(");
@@ -172,7 +158,17 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor {
 
 	@Override
 	public Void visit(SMVBoolExpr e) {
-		write(Boolean.toString(e.value));
+		String str = Boolean.toString(e.value);
+		if (str.contentEquals("true")) {
+			str = "TRUE";
+
+		}
+		if (str.contentEquals("false")) {
+			str = "FALSE";
+
+		}
+		write(str);
+
 		return null;
 	}
 
@@ -189,7 +185,7 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor {
 	}
 
 	@Override
-	public Object visit(SMVUnaryExpr e) {
+	public Void visit(SMVUnaryExpr e) {
 		write("(");
 		write(e.op);
 		if (e.op != SMVUnaryOp.SMVNEGATIVE) {
@@ -201,19 +197,17 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor {
 	}
 
 	@Override
-	public Object visit(SMVInitIdExpr e) {
-		// TODO Auto-generated method stub
+	public Void visit(SMVInitIdExpr e) {
 		return null;
 	}
 
 	@Override
-	public Object visit(SMVNextIdExpr e) {
-		// TODO Auto-generated method stub
+	public Void visit(SMVNextIdExpr e) {
 		return null;
 	}
 
 	@Override
-	public Object visit(SMVCaseExpr e) {
+	public Void visit(SMVCaseExpr e) {
 		newline();
 		write("		");
 		write("(case ");

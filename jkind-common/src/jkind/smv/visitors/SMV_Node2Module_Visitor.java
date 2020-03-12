@@ -23,15 +23,13 @@ import jkind.smv.SMVAst;
 import jkind.smv.SMVBinaryExpr;
 import jkind.smv.SMVBinaryOp;
 import jkind.smv.SMVBoolExpr;
+import jkind.smv.SMVCaseExpr;
 import jkind.smv.SMVEquation;
 import jkind.smv.SMVExpr;
 import jkind.smv.SMVIdExpr;
-import jkind.smv.SMVCaseExpr;
-import jkind.smv.SMVInitIdExpr;
 import jkind.smv.SMVIntExpr;
 import jkind.smv.SMVModule;
 import jkind.smv.SMVNamedType;
-import jkind.smv.SMVNextIdExpr;
 import jkind.smv.SMVSubrangeIntType;
 import jkind.smv.SMVType;
 import jkind.smv.SMVUnaryExpr;
@@ -78,7 +76,7 @@ public class SMV_Node2Module_Visitor implements SMV_Lus2SMV_Visitor<SMVAst, Ast>
 
 	public SMVVarDecl visit(VarDecl vd) {
 //		if(vd.type instanceof NamedType) {
-		if(vd.type instanceof SubrangeIntType) {
+		if (vd.type instanceof SubrangeIntType) {
 			return new SMVVarDecl(vd.id, this.visitSubrangeIntType((SubrangeIntType) vd.type));
 		}
 		return new SMVVarDecl(vd.id, this.visit(vd.type));
@@ -96,7 +94,7 @@ public class SMV_Node2Module_Visitor implements SMV_Lus2SMV_Visitor<SMVAst, Ast>
 	}
 
 	public SMVSubrangeIntType visitSubrangeIntType(SubrangeIntType vd) {
-		return new SMVSubrangeIntType(vd.low,vd.high);
+		return new SMVSubrangeIntType(vd.low, vd.high);
 	}
 
 	public SMVType visitNamedType(NamedType vd) {

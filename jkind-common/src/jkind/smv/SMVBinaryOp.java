@@ -19,7 +19,10 @@ public enum SMVBinaryOp {
 	XOR ("xor"),
 	IMPLIES ("=>"),
 	ARROW ("->"),
-	SMVAND("&");
+	
+	
+	SMVAND("&"),
+	SMVOR("|");
 	
 	private String str;
 	
@@ -36,6 +39,9 @@ public enum SMVBinaryOp {
 		for (SMVBinaryOp op : SMVBinaryOp.values()) {
 			if(string.equals("and")) {
 				return SMVAND;
+			}
+			if(string.equals("or")) {
+				return SMVOR;
 			}
 			if (op.toString().equals(string)) {
 				return op;

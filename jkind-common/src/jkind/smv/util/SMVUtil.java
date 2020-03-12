@@ -126,6 +126,9 @@ public class SMVUtil {
 	
 	public static String removeIllegalChar(String id) {
 		String str = id.replaceAll("~", "_");
+		str = str.replaceAll("\\.", "_");
+		str = str.replaceAll("true", "TRUE");
+		str = str.replaceAll("false", "FALSE");
 		return str;
 	}
 	

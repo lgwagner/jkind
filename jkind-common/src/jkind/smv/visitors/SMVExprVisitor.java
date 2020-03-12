@@ -1,11 +1,9 @@
 package jkind.smv.visitors;
 
-import jkind.lustre.BinaryExpr;
-import jkind.lustre.BoolExpr;
 import jkind.smv.SMVBinaryExpr;
 import jkind.smv.SMVBoolExpr;
-import jkind.smv.SMVIdExpr;
 import jkind.smv.SMVCaseExpr;
+import jkind.smv.SMVIdExpr;
 import jkind.smv.SMVInitIdExpr;
 import jkind.smv.SMVIntExpr;
 import jkind.smv.SMVNextIdExpr;
@@ -17,7 +15,6 @@ public interface SMVExprVisitor<T> {
 //	public T visit(ArrayUpdateExpr e);
 	public T visit(SMVBinaryExpr e);
 	public T visit(SMVBoolExpr e);
-	//public T visit(SMVBoolExpr e);
 //	public T visit(CastExpr e);
 //	public T visit(CondactExpr e);
 //	public T visit(FunctionCallExpr e);
