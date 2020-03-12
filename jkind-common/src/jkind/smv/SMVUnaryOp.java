@@ -2,7 +2,9 @@ package jkind.smv;
 
 public enum SMVUnaryOp {
 
-	SMVNEGATIVE("-"), SMVNOT("!"), SMVPRE(" ");
+	SMVNEGATIVE("-"), 
+	SMVNOT("!"), 
+	SMVPRE(" ");
 
 	private String str;
 

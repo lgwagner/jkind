@@ -188,9 +188,6 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor<Void, Void> {
 	public Void visit(SMVUnaryExpr e) {
 		write("(");
 		write(e.op);
-		if (e.op != SMVUnaryOp.SMVNEGATIVE) {
-			write(" ");
-		}
 		expr(e.expr);
 		write(")");
 		return null;
