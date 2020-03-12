@@ -42,11 +42,11 @@ public class SMV_Node2Module_Visitor implements SMV_Lus2SMV_Visitor<SMVAst, Ast>
 
 	@Override
 	public SMVModule visit(Node node) {
-		List<SMVVarDecl> sMVInputs = new ArrayList();
-		List<SMVVarDecl> sMVOutputs = new ArrayList();
-		List<SMVVarDecl> sMVlocals = new ArrayList();
-		List<SMVEquation> sMVEquations = new ArrayList();
-		List<String> sMVSpecifications = new ArrayList();
+		List<SMVVarDecl> sMVInputs = new ArrayList<SMVVarDecl>();
+		List<SMVVarDecl> sMVOutputs = new ArrayList<SMVVarDecl>();
+		List<SMVVarDecl> sMVlocals = new ArrayList<SMVVarDecl>();
+		List<SMVEquation> sMVEquations = new ArrayList<SMVEquation>();
+		List<String> sMVSpecifications = new ArrayList<String>();
 
 		if (!node.inputs.isEmpty()) {
 			for (VarDecl input : node.inputs) {
@@ -100,7 +100,7 @@ public class SMV_Node2Module_Visitor implements SMV_Lus2SMV_Visitor<SMVAst, Ast>
 
 	public List<SMVEquation> visit(Equation eqn) {
 		List<SMVEquation> sMVEquation = new ArrayList<SMVEquation>();
-		Expr expr = eqn.expr;
+//		Expr expr = eqn.expr;
 //		if (expr instanceof BinaryExpr) {
 //			if(((BinaryExpr) expr).op.toString().contentEquals("->")) {
 //				List<SMVIdExpr> lhs = new ArrayList<>();

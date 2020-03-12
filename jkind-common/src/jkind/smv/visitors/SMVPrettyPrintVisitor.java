@@ -162,11 +162,9 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor<Void, Void> {
 		String str = Boolean.toString(e.value);
 		if (str.contentEquals("true")) {
 			str = "TRUE";
-
 		}
 		if (str.contentEquals("false")) {
 			str = "FALSE";
-
 		}
 		write(str);
 		return null;
@@ -183,7 +181,7 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor<Void, Void> {
 		write(e.value);
 		return null;
 	}
-	
+
 	@Override
 	public Void visit(SMVRealExpr e) {
 		write(e.value);
@@ -230,7 +228,5 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor<Void, Void> {
 		write("esac)");
 		return null;
 	}
-
-	
 
 }
