@@ -14,6 +14,7 @@ import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
+import jkind.lustre.RealExpr;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.lustre.UnaryExpr;
@@ -30,6 +31,7 @@ import jkind.smv.SMVIdExpr;
 import jkind.smv.SMVIntExpr;
 import jkind.smv.SMVModule;
 import jkind.smv.SMVNamedType;
+import jkind.smv.SMVRealExpr;
 import jkind.smv.SMVSubrangeIntType;
 import jkind.smv.SMVType;
 import jkind.smv.SMVUnaryExpr;
@@ -156,6 +158,10 @@ public class SMV_Node2Module_Visitor implements SMV_Lus2SMV_Visitor<SMVAst, Ast>
 
 	public SMVIntExpr visit(IntExpr expr) {
 		return new SMVIntExpr(expr.value);
+	}
+	
+	public SMVRealExpr visit(RealExpr expr) {
+		return new SMVRealExpr(expr.value);
 	}
 
 	public SMVUnaryExpr visit(UnaryExpr expr) {

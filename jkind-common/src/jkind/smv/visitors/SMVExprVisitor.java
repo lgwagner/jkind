@@ -7,6 +7,7 @@ import jkind.smv.SMVIdExpr;
 import jkind.smv.SMVInitIdExpr;
 import jkind.smv.SMVIntExpr;
 import jkind.smv.SMVNextIdExpr;
+import jkind.smv.SMVRealExpr;
 import jkind.smv.SMVUnaryExpr;
 
 public interface SMVExprVisitor<T> {
@@ -24,7 +25,7 @@ public interface SMVExprVisitor<T> {
 	public T visit(SMVCaseExpr e);
 	public T visit(SMVIntExpr e);
 //	public T visit(SMVNodeCallExpr e);
-//	public T visit(SMVRealExpr e);
+	public T visit(SMVRealExpr e);
 //	public T visit(RecordAccessExpr e);
 //	public T visit(RecordExpr e);
 //	public T visit(RecordUpdateExpr e);

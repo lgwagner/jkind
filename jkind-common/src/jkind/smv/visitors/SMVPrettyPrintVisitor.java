@@ -14,6 +14,7 @@ import jkind.smv.SMVIntExpr;
 import jkind.smv.SMVModule;
 import jkind.smv.SMVNextIdExpr;
 import jkind.smv.SMVProgram;
+import jkind.smv.SMVRealExpr;
 import jkind.smv.SMVUnaryExpr;
 import jkind.smv.SMVUnaryOp;
 import jkind.smv.SMVVarDecl;
@@ -182,6 +183,12 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor<Void, Void> {
 		write(e.value);
 		return null;
 	}
+	
+	@Override
+	public Void visit(SMVRealExpr e) {
+		write(e.value);
+		return null;
+	}
 
 	@Override
 	public Void visit(SMVUnaryExpr e) {
@@ -223,5 +230,7 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor<Void, Void> {
 		write("esac)");
 		return null;
 	}
+
+	
 
 }
