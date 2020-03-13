@@ -20,12 +20,10 @@ public class SMVProgramBuilder {
 	}
 	
 	public SMVProgramBuilder(Program program) {
-		// TODO Auto-generated constructor stub
 		this.main = program.main;
 	}
 	
 	public SMVProgramBuilder(SMVProgram program) {
-		// TODO Auto-generated constructor stub
 		this.modules = new ArrayList<>(program.modules);
 		this.main = program.main;
 	}

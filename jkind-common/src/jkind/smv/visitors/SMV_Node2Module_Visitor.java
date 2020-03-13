@@ -127,6 +127,9 @@ public class SMV_Node2Module_Visitor implements SMV_Lus2SMV_Visitor<SMVAst, Ast>
 		if (expr instanceof IntExpr) {
 			return this.visit((IntExpr) expr);
 		}
+		if (expr instanceof RealExpr) {
+			return this.visit((RealExpr) expr);
+		}
 		if (expr instanceof BoolExpr) {
 			return this.visit((BoolExpr) expr);
 		}
