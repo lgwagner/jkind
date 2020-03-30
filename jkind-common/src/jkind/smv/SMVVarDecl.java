@@ -12,7 +12,7 @@ public class SMVVarDecl extends SMVAst {
 		Assert.isNotNull(id);
 		Assert.isNotNull(type);
 
-		this.id = SMVUtil.removeIllegalChar(id);
+		this.id = SMVUtil.replaceIllegalStr(id);
 		this.type = type;
 	}
 
@@ -20,7 +20,7 @@ public class SMVVarDecl extends SMVAst {
 		Assert.isNotNull(id);
 		Assert.isNotNull(type);
 
-		this.id = SMVUtil.removeIllegalChar(id);
+		this.id = SMVUtil.replaceIllegalStr(id);
 		this.type = type;
 	}
 
