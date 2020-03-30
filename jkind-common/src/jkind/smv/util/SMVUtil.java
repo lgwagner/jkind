@@ -9,7 +9,7 @@ public class SMVUtil {
 
 	private static Set<String> hash_Set = new HashSet<String>();
 
-	public static void isNotKeyword(String str) {
+	public static boolean isKeyword(String str) {
 		hash_Set.add("@F~");
 		hash_Set.add("@O~");
 		hash_Set.add("A");
@@ -120,15 +120,21 @@ public class SMVUtil {
 		hash_Set.add("Z");
 		
 		if(hash_Set.contains(str.toString())) {
-			throw new JKindException("'"+str+"'"+" is a SMV keyword");
+			return true;
+			//throw new JKindException("'"+str+"'"+" is a SMV keyword");
 		}
+		return false;
 	}
 	
-	public static String removeIllegalChar(String id) {
+	
+	public static String replaceIllegalStr(String id) {
 		String str = id.replaceAll("~", "_");
 		str = str.replaceAll("\\.", "_");
 		str = str.replaceAll("true", "TRUE");
 		str = str.replaceAll("false", "FALSE");
+		if(isKeyword(str)) {
+			str = id.replaceAll(id, id+"_new");
+		}
 		return str;
 	}
 	

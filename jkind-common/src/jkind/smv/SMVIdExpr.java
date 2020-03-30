@@ -10,8 +10,7 @@ public class SMVIdExpr extends SMVExpr {
 
 	public SMVIdExpr(String id) {
 		Assert.isNotNull(id);
-		SMVUtil.isNotKeyword(id);
-		String str = SMVUtil.removeIllegalChar(id);
+		String str = SMVUtil.replaceIllegalStr(id);
 		this.id = id.replace(id, str);
 	}
 
