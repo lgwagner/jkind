@@ -150,7 +150,11 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor<Void, Void> {
 		write("(");
 		expr(e.left);
 		write(" ");
-		write(e.op);
+		if(e.op.toString().equals("=>")) {
+			write("->");
+		}else {
+			write(e.op);
+		}
 		write(" ");
 		expr(e.right);
 		write(")");
