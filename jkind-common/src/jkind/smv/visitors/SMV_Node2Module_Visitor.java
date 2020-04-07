@@ -180,9 +180,6 @@ public class SMV_Node2Module_Visitor implements SMV_Lus2SMV_Visitor<SMVAst, Ast>
 	}
 
 	public SMVBinaryExpr visit(BinaryExpr expr) {
-		if (expr.op.toString().contentEquals("->")) {
-
-		}
 		return new SMVBinaryExpr(this.visit(expr.left), visitBinaryOp(expr.op), this.visit(expr.right));
 	}
 
