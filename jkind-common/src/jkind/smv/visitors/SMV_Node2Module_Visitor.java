@@ -100,18 +100,6 @@ public class SMV_Node2Module_Visitor implements SMV_Lus2SMV_Visitor<SMVAst, Ast>
 
 	public List<SMVEquation> visit(Equation eqn) {
 		List<SMVEquation> sMVEquation = new ArrayList<SMVEquation>();
-//		Expr expr = eqn.expr;
-//		if (expr instanceof BinaryExpr) {
-//			if(((BinaryExpr) expr).op.toString().contentEquals("->")) {
-//				List<SMVIdExpr> lhs = new ArrayList<>();
-//				for (IdExpr lh : eqn.lhs) {
-//					lhs.add((SMVIdExpr) this.visit(lh));
-//					sMVEquation.add(new SMVEquation(new SMVInitIdExpr(lh.id), this.visit(((BinaryExpr) expr).left)));
-//					sMVEquation.add(new SMVEquation(new SMVNextIdExpr(lh.id), this.visit(((BinaryExpr) expr).right)));
-//				}
-//				return sMVEquation;
-//			}
-//		}
 		List<SMVIdExpr> lhs = new ArrayList<>();
 		for (IdExpr lh : eqn.lhs) {
 			lhs.add((SMVIdExpr) this.visit(lh));
@@ -162,7 +150,7 @@ public class SMV_Node2Module_Visitor implements SMV_Lus2SMV_Visitor<SMVAst, Ast>
 	public SMVIntExpr visit(IntExpr expr) {
 		return new SMVIntExpr(expr.value);
 	}
-	
+
 	public SMVRealExpr visit(RealExpr expr) {
 		return new SMVRealExpr(expr.value);
 	}
