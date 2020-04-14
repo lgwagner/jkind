@@ -7,6 +7,7 @@ import jkind.lustre.Ast;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.BoolExpr;
+import jkind.lustre.CastExpr;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
@@ -25,6 +26,7 @@ import jkind.smv.SMVBinaryExpr;
 import jkind.smv.SMVBinaryOp;
 import jkind.smv.SMVBoolExpr;
 import jkind.smv.SMVCaseExpr;
+import jkind.smv.SMVCastExpr;
 import jkind.smv.SMVEquation;
 import jkind.smv.SMVExpr;
 import jkind.smv.SMVIdExpr;
@@ -130,6 +132,9 @@ public class SMV_Node2Module_Visitor implements SMV_Lus2SMV_Visitor<SMVAst, Ast>
 		if (expr instanceof IfThenElseExpr) {
 			return this.visit((IfThenElseExpr) expr);
 		}
+		if (expr instanceof CastExpr) {
+			return this.visit((CastExpr) expr);
+		}
 		return null;
 	}
 
@@ -177,6 +182,10 @@ public class SMV_Node2Module_Visitor implements SMV_Lus2SMV_Visitor<SMVAst, Ast>
 
 	public SMVCaseExpr visit(IfThenElseExpr expr) {
 		return new SMVCaseExpr(this.visit(expr.cond), this.visit(expr.thenExpr), this.visit(expr.elseExpr));
+	}
+	
+	public SMVCastExpr visit(CastExpr expr) {
+		return new SMVCastExpr(this.visit(expr.type), this.visit(expr.expr));
 	}
 
 }

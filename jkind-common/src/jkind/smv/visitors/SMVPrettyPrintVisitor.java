@@ -6,15 +6,19 @@ import java.util.List;
 import jkind.smv.SMVBinaryExpr;
 import jkind.smv.SMVBoolExpr;
 import jkind.smv.SMVCaseExpr;
+import jkind.smv.SMVCastExpr;
 import jkind.smv.SMVEquation;
 import jkind.smv.SMVExpr;
+import jkind.smv.SMVFunctionCallExpr;
 import jkind.smv.SMVIdExpr;
 import jkind.smv.SMVInitIdExpr;
 import jkind.smv.SMVIntExpr;
 import jkind.smv.SMVModule;
+import jkind.smv.SMVNamedType;
 import jkind.smv.SMVNextIdExpr;
 import jkind.smv.SMVProgram;
 import jkind.smv.SMVRealExpr;
+import jkind.smv.SMVType;
 import jkind.smv.SMVUnaryExpr;
 import jkind.smv.SMVUnaryOp;
 import jkind.smv.SMVVarDecl;
@@ -230,6 +234,41 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor<Void, Void> {
 		newline();
 		write("		");
 		write("esac)");
+		return null;
+	}
+
+	@Override
+	public Void visit(SMVCastExpr e) {
+		write(getCastFunction(e.type));
+		write("(");
+		expr(e.expr);
+		write(")");
+		return null;
+	}
+
+	private String getCastFunction(SMVType type) {
+		if (type == SMVNamedType.REAL) {
+			return "real";
+		} else if (type == SMVNamedType.INT) {
+			return "floor";
+		} else {
+			throw new IllegalArgumentException("Unable to cast to type: " + type);
+		}
+	}
+
+
+	@Override
+	public Void visit(SMVFunctionCallExpr e) {
+		write(e.function);
+		write("(");
+		Iterator<SMVExpr> iterator = e.args.iterator();
+		while (iterator.hasNext()) {
+			expr(iterator.next());
+			if (iterator.hasNext()) {
+				write(", ");
+			}
+		}
+		write(")");
 		return null;
 	}
 
