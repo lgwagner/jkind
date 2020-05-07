@@ -20,7 +20,7 @@ public enum SMVBinaryOp {
 	IMPLIES("=>"),
 	ARROW("->"),
 
-	SMVNOTEQUAL("!="), SMVAND("&"), SMVOR("|");
+	SMVNOTEQUAL("!="), SMVAND("&"), SMVOR("|"), SMVDIV("/");
 	// SMVIMPLY("->");
 
 	private String str;
@@ -44,6 +44,9 @@ public enum SMVBinaryOp {
 			}
 			if (string.equals("<>")) {
 				return SMVNOTEQUAL;
+			}
+			if (string.equals("div")) {
+				return SMVDIV;
 			}
 			if (op.toString().equals(string)) {
 				return op;
