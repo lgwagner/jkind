@@ -3,12 +3,16 @@ package jkind.smv.visitors;
 import java.util.Iterator;
 import java.util.List;
 
+import jkind.smv.SMVArrayAccessExpr;
+import jkind.smv.SMVArrayExpr;
+import jkind.smv.SMVArrayUpdateExpr;
 import jkind.smv.SMVBinaryExpr;
 import jkind.smv.SMVBoolExpr;
 import jkind.smv.SMVCaseExpr;
 import jkind.smv.SMVCastExpr;
 import jkind.smv.SMVEquation;
 import jkind.smv.SMVExpr;
+import jkind.smv.SMVFunction;
 import jkind.smv.SMVFunctionCallExpr;
 import jkind.smv.SMVIdExpr;
 import jkind.smv.SMVInitIdExpr;
@@ -20,7 +24,6 @@ import jkind.smv.SMVProgram;
 import jkind.smv.SMVRealExpr;
 import jkind.smv.SMVType;
 import jkind.smv.SMVUnaryExpr;
-import jkind.smv.SMVUnaryOp;
 import jkind.smv.SMVVarDecl;
 
 public class SMVPrettyPrintVisitor implements SMVAstVisitor<Void, Void> {
@@ -60,7 +63,9 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor<Void, Void> {
 	@Override
 	public Void visit(SMVModule module) {
 		write("MODULE ");
-		write(module.id);
+		/*TODO there supposed to be only one module called "main". If it is otherwise then uncomment the following line.*/
+		//write(module.id);
+		write("main");
 		newline();
 		inputVarDecls(module.inputs);
 		newline();
@@ -76,6 +81,14 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor<Void, Void> {
 			newline();
 			newline();
 		}
+		
+		for (SMVExpr assertion : module.assertions) {
+			write("  INVAR ");
+			expr(assertion);
+			write(";");
+			newline();
+		}
+
 
 		if (!module.sMVSpecifications.isEmpty()) {
 			for (String property : module.sMVSpecifications) {
@@ -85,6 +98,11 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor<Void, Void> {
 		}
 
 		return null;
+	}
+
+	private void assertion(SMVExpr assertion) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private void inputVarDecls(List<SMVVarDecl> inputs) {
@@ -269,6 +287,30 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor<Void, Void> {
 			}
 		}
 		write(")");
+		return null;
+	}
+
+	@Override
+	public Void visit(SMVArrayAccessExpr e) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Void visit(SMVArrayExpr e) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Void visit(SMVArrayUpdateExpr e) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Void visit(SMVFunction smvFunction) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
