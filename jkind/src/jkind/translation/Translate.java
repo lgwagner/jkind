@@ -12,6 +12,7 @@ public class Translate {
 		program = InlineNodeCalls.program(program);
 		program = FlattenCompoundTypes.program(program);
 		program = FlattenPres.program(program);
+		//program = FlattenArrow.program(program);
 		return program;
 	}
 }
