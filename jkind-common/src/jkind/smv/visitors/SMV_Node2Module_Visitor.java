@@ -3,6 +3,7 @@ package jkind.smv.visitors;
 import java.util.ArrayList;
 import java.util.List;
 
+import jkind.lustre.ArrayExpr;
 import jkind.lustre.Ast;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
@@ -10,6 +11,7 @@ import jkind.lustre.BoolExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
@@ -21,6 +23,7 @@ import jkind.lustre.Type;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.VarDecl;
+import jkind.smv.SMVArrayExpr;
 import jkind.smv.SMVAst;
 import jkind.smv.SMVBinaryExpr;
 import jkind.smv.SMVBinaryOp;
@@ -29,6 +32,7 @@ import jkind.smv.SMVCaseExpr;
 import jkind.smv.SMVCastExpr;
 import jkind.smv.SMVEquation;
 import jkind.smv.SMVExpr;
+import jkind.smv.SMVFunctionCallExpr;
 import jkind.smv.SMVIdExpr;
 import jkind.smv.SMVIntExpr;
 import jkind.smv.SMVModule;
@@ -39,6 +43,7 @@ import jkind.smv.SMVType;
 import jkind.smv.SMVUnaryExpr;
 import jkind.smv.SMVUnaryOp;
 import jkind.smv.SMVVarDecl;
+import jkind.smv.util.SMVUtil;
 
 public class SMV_Node2Module_Visitor implements SMV_Lus2SMV_Visitor<SMVAst, Ast> {
 
@@ -48,6 +53,7 @@ public class SMV_Node2Module_Visitor implements SMV_Lus2SMV_Visitor<SMVAst, Ast>
 		List<SMVVarDecl> sMVOutputs = new ArrayList<SMVVarDecl>();
 		List<SMVVarDecl> sMVlocals = new ArrayList<SMVVarDecl>();
 		List<SMVEquation> sMVEquations = new ArrayList<SMVEquation>();
+		List<SMVExpr> sMVAssertions = new ArrayList<SMVExpr>();
 		List<String> sMVSpecifications = new ArrayList<String>();
 
 		if (!node.inputs.isEmpty()) {
@@ -70,12 +76,17 @@ public class SMV_Node2Module_Visitor implements SMV_Lus2SMV_Visitor<SMVAst, Ast>
 				sMVEquations.addAll(this.visit(eqn));
 			}
 		}
-		if (!node.properties.isEmpty()) {
-			for (String eqn : node.properties) {
-				sMVSpecifications.add(eqn);
+		if (!node.assertions.isEmpty()) {
+			for (Expr asser : node.assertions) {
+				sMVAssertions.add(this.visit(asser));
 			}
 		}
-		return new SMVModule(node.id, sMVInputs, sMVOutputs, sMVlocals, sMVEquations, sMVSpecifications);
+		if (!node.properties.isEmpty()) {
+			for (String property : node.properties) {
+				sMVSpecifications.add(SMVUtil.replaceIllegalChar(property));
+			}
+		}
+		return new SMVModule(node.id, sMVInputs, sMVOutputs, sMVlocals, sMVEquations, sMVAssertions, sMVSpecifications);
 	}
 
 	public SMVVarDecl visit(VarDecl vd) {
@@ -110,34 +121,33 @@ public class SMV_Node2Module_Visitor implements SMV_Lus2SMV_Visitor<SMVAst, Ast>
 		return sMVEquation;
 	}
 
+	//TODO check whether switch can be used in the following
 	public SMVExpr visit(Expr expr) {
 		if (expr instanceof IdExpr) {
 			return this.visit((IdExpr) expr);
-		}
-		if (expr instanceof IntExpr) {
+		} else if (expr instanceof IntExpr) {
 			return this.visit((IntExpr) expr);
-		}
-		if (expr instanceof RealExpr) {
+		}else if (expr instanceof RealExpr) {
 			return this.visit((RealExpr) expr);
-		}
-		if (expr instanceof BoolExpr) {
+		}else if (expr instanceof BoolExpr) {
 			return this.visit((BoolExpr) expr);
-		}
-		if (expr instanceof UnaryExpr) {
+		}else if (expr instanceof ArrayExpr) {
+			return this.visit((ArrayExpr) expr);
+		}else if (expr instanceof UnaryExpr) {
 			return this.visit((UnaryExpr) expr);
-		}
-		if (expr instanceof BinaryExpr) {
+		}else if (expr instanceof BinaryExpr) {
 			return this.visit((BinaryExpr) expr);
-		}
-		if (expr instanceof IfThenElseExpr) {
+		}else if (expr instanceof IfThenElseExpr) {
 			return this.visit((IfThenElseExpr) expr);
-		}
-		if (expr instanceof CastExpr) {
+		}else if (expr instanceof CastExpr) {
 			return this.visit((CastExpr) expr);
+		}else if (expr instanceof FunctionCallExpr) {
+			return this.visit((FunctionCallExpr) expr);
 		}
 		return null;
 	}
 
+	//TODO check necessity of visitInitEqn() and visitNextEqn()
 	public SMVEquation visitInitEqn(IdExpr idExpr, Expr expr) {
 		List<SMVIdExpr> lhs = new ArrayList<>();
 		lhs.add((SMVIdExpr) this.visit(idExpr));
@@ -158,6 +168,18 @@ public class SMV_Node2Module_Visitor implements SMV_Lus2SMV_Visitor<SMVAst, Ast>
 
 	public SMVRealExpr visit(RealExpr expr) {
 		return new SMVRealExpr(expr.value);
+	}
+	
+	public SMVArrayExpr visit(ArrayExpr expr) {
+		return new SMVArrayExpr(this.visit(expr.elements));
+	}
+	
+	public List<SMVExpr> visit(List<Expr> elements) {
+		List<SMVExpr> sMVElements = new ArrayList<SMVExpr>();
+		for(Expr element : elements) {
+			sMVElements.add(this.visit(element));
+		}
+		return sMVElements;
 	}
 
 	public SMVUnaryExpr visit(UnaryExpr expr) {
@@ -186,6 +208,10 @@ public class SMV_Node2Module_Visitor implements SMV_Lus2SMV_Visitor<SMVAst, Ast>
 	
 	public SMVCastExpr visit(CastExpr expr) {
 		return new SMVCastExpr(this.visit(expr.type), this.visit(expr.expr));
+	}
+	
+	public SMVFunctionCallExpr visit(FunctionCallExpr expr) {
+		return new SMVFunctionCallExpr(expr.function, this.visit(expr.args));
 	}
 
 }
