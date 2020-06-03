@@ -15,6 +15,7 @@ import jkind.smv.SMVModule;
 import jkind.smv.SMVProgram;
 import jkind.smv.builders.SMVProgramBuilder;
 import jkind.smv.util.SMVFlattenArrow;
+import jkind.smv.util.SMVInitNextEqn;
 import jkind.smv.util.SMVPreDistribution;
 import jkind.smv.visitors.SMV_Node2Module_Visitor;
 import jkind.translation.RemoveEnumTypes;
@@ -77,7 +78,8 @@ public class JLustre2SMV {
 			SMVProgram smvp = new SMVProgramBuilder(programForSMV).build();
 			SMVModule sMVModule = new SMV_Node2Module_Visitor().visit(smvMainNode);
 			smvp = new SMVProgramBuilder(smvp).addModule(sMVModule).build();
-
+			smvp = SMVInitNextEqn.program(smvp);
+			
 			String outFilenameSMV = filename.substring(0, filename.length() - 4) + ".smv";
 			Util.writeToFile(smvp.toString(), new File(outFilenameSMV));
 			System.out.println("Wrote " + outFilenameSMV);
