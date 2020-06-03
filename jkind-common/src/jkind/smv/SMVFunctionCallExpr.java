@@ -18,8 +18,8 @@ public class SMVFunctionCallExpr extends SMVExpr {
 		this.args = Util.safeList(args);
 	}
 	
-	public SMVFunctionCallExpr(String node, SMVExpr... args) {
-		this(node, Arrays.asList(args));
+	public SMVFunctionCallExpr(String nodeName, SMVExpr... args) {
+		this(nodeName, Arrays.asList(args));
 	}
 
 	@Override
