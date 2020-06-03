@@ -127,13 +127,17 @@ public class SMVUtil {
 	}
 	
 	
-	public static String replaceIllegalStr(String id) {
+	public static String replaceIllegalChar(String id) {
+		//TODO for "~" use different replacement and for "." different one
 		String str = id.replaceAll("~", "_");
 		str = str.replaceAll("\\.", "_");
+		str = str.replaceAll("\\[", "-");
+		str = str.replaceAll("\\]", "-");
 		str = str.replaceAll("true", "TRUE");
 		str = str.replaceAll("false", "FALSE");
+		str = str.replaceAll("main", "maiin");
 		if(isKeyword(str)) {
-			str = id.replaceAll(id, id+"_new");
+			str = id.replaceAll(id, id+"N");
 		}
 		return str;
 	}
