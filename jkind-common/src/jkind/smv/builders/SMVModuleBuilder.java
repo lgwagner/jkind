@@ -16,6 +16,7 @@ public class SMVModuleBuilder {
 	private List<SMVVarDecl> outputs = new ArrayList<>();
 	private List<SMVVarDecl> locals = new ArrayList<>();
 	private List<SMVEquation> equations = new ArrayList<>();
+	private List<SMVExpr> assertions = new ArrayList<>();
 	private List<String> sMVSpecifications = new ArrayList<>();
 
 	public SMVModuleBuilder(String id) {
@@ -28,8 +29,9 @@ public class SMVModuleBuilder {
 		this.outputs = new ArrayList<>(module.outputs);
 		this.locals = new ArrayList<>(module.locals);
 		this.equations = new ArrayList<>(module.equations);
+		this.assertions = new ArrayList<>(module.assertions);
 		this.sMVSpecifications = new ArrayList<>(module.sMVSpecifications);
-		
+
 	}
 
 	public SMVModuleBuilder setId(String id) {
@@ -62,6 +64,21 @@ public class SMVModuleBuilder {
 		return this;
 	}
 
+	public SMVModuleBuilder addAssertion(SMVExpr assertion) {
+		this.assertions.add(assertion);
+		return this;
+	}
+
+	public SMVModuleBuilder addAssertions(Collection<SMVExpr> assertions) {
+		this.assertions.addAll(assertions);
+		return this;
+	}
+
+	public SMVModuleBuilder clearAssertions() {
+		this.assertions.clear();
+		return this;
+	}
+
 	public SMVModuleBuilder addEquation(SMVEquation equation) {
 		this.equations.add(equation);
 		return this;
@@ -76,13 +93,13 @@ public class SMVModuleBuilder {
 		this.equations.addAll(equations);
 		return this;
 	}
-	
+
 	public SMVModuleBuilder addSpecifications(Collection<String> sMVSpecifications) {
 		this.sMVSpecifications.addAll(sMVSpecifications);
 		return this;
 	}
 
 	public SMVModule build() {
-		return new SMVModule(id, inputs, outputs, locals,equations,sMVSpecifications);
+		return new SMVModule(id, inputs, outputs, locals, equations, assertions, sMVSpecifications);
 	}
 }
