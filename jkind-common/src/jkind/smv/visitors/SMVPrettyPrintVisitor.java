@@ -15,11 +15,10 @@ import jkind.smv.SMVExpr;
 import jkind.smv.SMVFunction;
 import jkind.smv.SMVFunctionCallExpr;
 import jkind.smv.SMVIdExpr;
-import jkind.smv.SMVInitIdExpr;
 import jkind.smv.SMVIntExpr;
 import jkind.smv.SMVModule;
+import jkind.smv.SMVModuleCallExpr;
 import jkind.smv.SMVNamedType;
-import jkind.smv.SMVNextIdExpr;
 import jkind.smv.SMVProgram;
 import jkind.smv.SMVRealExpr;
 import jkind.smv.SMVType;
@@ -27,7 +26,9 @@ import jkind.smv.SMVUnaryExpr;
 import jkind.smv.SMVVarDecl;
 
 public class SMVPrettyPrintVisitor implements SMVAstVisitor<Void, Void> {
+	private SMVProgram program;
 	private StringBuilder sb = new StringBuilder();
+	@SuppressWarnings("unused")
 	private String main;
 
 	@Override
@@ -45,9 +46,21 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor<Void, Void> {
 		write(seperator);
 	}
 
+	public Void visitFunction() {
+		if (!program.functions.isEmpty()) {
+			for (SMVFunction function : program.functions) {
+				function.accept(this);
+				newline();
+			}
+		}
+		return null;
+	}
+
 	@Override
 	public Void visit(SMVProgram program) {
 		main = program.main;
+		this.program = program;
+
 		Iterator<SMVModule> iterator = program.modules.iterator();
 		while (iterator.hasNext()) {
 			iterator.next().accept(this);
@@ -56,15 +69,17 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor<Void, Void> {
 				newline();
 			}
 		}
-
 		return null;
 	}
 
 	@Override
 	public Void visit(SMVModule module) {
 		write("MODULE ");
-		/*TODO there supposed to be only one module called "main". If it is otherwise then uncomment the following line.*/
-		//write(module.id);
+		/*
+		 * TODO there supposed to be only one module called "main". If it is otherwise
+		 * then uncomment the following line.
+		 */
+		// write(module.id);
 		write("main");
 		newline();
 		inputVarDecls(module.inputs);
@@ -73,6 +88,11 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor<Void, Void> {
 		newline();
 		varDecls(module.locals);
 		newline();
+		/*
+		 * at this point, functions has to be appear unlike to Lustre in which functions
+		 * before node's definition
+		 */
+		visitFunction();
 		write("ASSIGN");
 		newline();
 		for (SMVEquation equation : module.equations) {
@@ -81,14 +101,13 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor<Void, Void> {
 			newline();
 			newline();
 		}
-		
+
 		for (SMVExpr assertion : module.assertions) {
 			write("  INVAR ");
 			expr(assertion);
 			write(";");
 			newline();
 		}
-
 
 		if (!module.sMVSpecifications.isEmpty()) {
 			for (String property : module.sMVSpecifications) {
@@ -98,11 +117,6 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor<Void, Void> {
 		}
 
 		return null;
-	}
-
-	private void assertion(SMVExpr assertion) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	private void inputVarDecls(List<SMVVarDecl> inputs) {
@@ -139,16 +153,10 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor<Void, Void> {
 
 	@Override
 	public Void visit(SMVEquation smvEquation) {
-		if (smvEquation.lhs.isEmpty()) {
+		if (smvEquation.lhs == null) {
 			write("()");
 		} else {
-			Iterator<SMVIdExpr> iterator = smvEquation.lhs.iterator();
-			while (iterator.hasNext()) {
-				write(iterator.next().id);
-				if (iterator.hasNext()) {
-					write(", ");
-				}
-			}
+			write(smvEquation.lhs);
 		}
 		write(" := ");
 		expr(smvEquation.expr);
@@ -172,9 +180,9 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor<Void, Void> {
 		write("(");
 		expr(e.left);
 		write(" ");
-		if(e.op.toString().equals("=>")) {
+		if (e.op.toString().equals("=>")) {
 			write("->");
-		}else {
+		} else {
 			write(e.op);
 		}
 		write(" ");
@@ -224,16 +232,6 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor<Void, Void> {
 	}
 
 	@Override
-	public Void visit(SMVInitIdExpr e) {
-		return null;
-	}
-
-	@Override
-	public Void visit(SMVNextIdExpr e) {
-		return null;
-	}
-
-	@Override
 	public Void visit(SMVCaseExpr e) {
 		newline();
 		write("		");
@@ -265,15 +263,36 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor<Void, Void> {
 	}
 
 	private String getCastFunction(SMVType type) {
-		if (type == SMVNamedType.REAL) {
-			return "real";
-		} else if (type == SMVNamedType.INT) {
+		if (type == SMVNamedType.INT) {
 			return "floor";
 		} else {
 			throw new IllegalArgumentException("Unable to cast to type: " + type);
 		}
 	}
 
+	@Override
+	public Void visit(SMVFunction smvFunction) {
+		write("  FUN ");
+		write(smvFunction.id);
+		write(" : ");
+		Iterator<SMVVarDecl> iterator = smvFunction.inputs.iterator();
+		while (iterator.hasNext()) {
+			write(iterator.next().type);
+			if (iterator.hasNext()) {
+				write(" * ");
+			}
+		}
+		write(" -> ");
+		Iterator<SMVVarDecl> iterator1 = smvFunction.outputs.iterator();
+		while (iterator1.hasNext()) {
+			write(iterator1.next().type);
+			if (iterator1.hasNext()) {
+				write(" * ");
+			}
+		}
+		write(";");
+		return null;
+	}
 
 	@Override
 	public Void visit(SMVFunctionCallExpr e) {
@@ -309,7 +328,7 @@ public class SMVPrettyPrintVisitor implements SMVAstVisitor<Void, Void> {
 	}
 
 	@Override
-	public Void visit(SMVFunction smvFunction) {
+	public Void visit(SMVModuleCallExpr e) {
 		// TODO Auto-generated method stub
 		return null;
 	}

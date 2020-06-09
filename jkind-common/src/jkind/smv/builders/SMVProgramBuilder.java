@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import jkind.lustre.Program;
+import jkind.smv.SMVFunction;
 import jkind.smv.SMVModule;
 import jkind.smv.SMVProgram;
 
@@ -13,6 +14,7 @@ public class SMVProgramBuilder {
 
 	
 	private List<SMVModule> modules = new ArrayList<>();
+	private List<SMVFunction> sMVFunctions = new ArrayList<>();
 	
 	private String main;
 
@@ -24,6 +26,7 @@ public class SMVProgramBuilder {
 	}
 	
 	public SMVProgramBuilder(SMVProgram program) {
+		this.sMVFunctions = new ArrayList<>(program.functions);
 		this.modules = new ArrayList<>(program.modules);
 		this.main = program.main;
 	}
@@ -49,7 +52,7 @@ public class SMVProgramBuilder {
 	}
 	
 	public SMVProgram build() {
-		return new SMVProgram(modules, main);
+		return new SMVProgram(sMVFunctions,modules, main);
 	}
 }
 

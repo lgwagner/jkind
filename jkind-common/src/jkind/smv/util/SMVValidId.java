@@ -3,9 +3,7 @@ package jkind.smv.util;
 import java.util.HashSet;
 import java.util.Set;
 
-import jkind.JKindException;
-
-public class SMVUtil {
+public class SMVValidId {
 
 	private static Set<String> hash_Set = new HashSet<String>();
 
@@ -118,31 +116,37 @@ public class SMVUtil {
 		hash_Set.add("X~Y");
 		hash_Set.add("Y~");
 		hash_Set.add("Z");
-		
-		if(hash_Set.contains(str.toString())) {
+
+		if (hash_Set.contains(str.toString())) {
 			return true;
-			//throw new JKindException("'"+str+"'"+" is a SMV keyword");
+		} else {
+			return false;
 		}
-		return false;
 	}
-	
-	
+
 	public static String replaceIllegalChar(String id) {
-		//TODO for "~" use different replacement and for "." different one
-		String str = id.replaceAll("~", "_");
-		str = str.replaceAll("\\.", "_");
-		str = str.replaceAll("\\[", "-");
-		str = str.replaceAll("\\]", "-");
-		str = str.replaceAll("true", "TRUE");
-		str = str.replaceAll("false", "FALSE");
-		str = str.replaceAll("main", "maiin");
-		if(isKeyword(str)) {
-			str = id.replaceAll(id, id+"N");
+		// TODO for "~" use different replacement and for "." different one
+		if(!isNumeric(id)) {
+			String str = id.replaceAll("~", "_");
+			str = str.replaceAll("\\.", "_");
+			str = str.replaceAll("\\[", "-");
+			str = str.replaceAll("\\]", "-");
+			str = str.replaceAll("true", "TRUE");
+			str = str.replaceAll("false", "FALSE");
+			str = str.replaceAll("main", "maiin");
+			if (isKeyword(str)) {
+				str = id.replaceAll(id, id + "N");
+			}
+			return str;
 		}
-		return str;
+		return id;
 	}
-	
+
 	public static void isValid() {
-		
+
+	}
+
+	public static boolean isNumeric(String str) {
+		return str.matches("_?\\d+(\\.\\d+)?"); // match a number with optional '-' and decimal.
 	}
 }

@@ -7,9 +7,9 @@ import jkind.smv.SMVProgram;
 import jkind.smv.SMVVarDecl;
 
 public interface SMVAstVisitor<T, S extends T> extends SMVExprVisitor<S>{
-	public T visit(SMVEquation smvEquation);
 	public T visit(SMVFunction smvFunction);
-	public T visit(SMVModule smvModule);
 	public T visit(SMVProgram smvProgram);
+	public T visit(SMVModule smvModule);
 	public T visit(SMVVarDecl smvVarDecl);
+	public T visit(SMVEquation smvEquation);
 }
