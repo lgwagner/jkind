@@ -9,17 +9,20 @@ import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.builders.NodeBuilder;
 import jkind.lustre.builders.ProgramBuilder;
-import jkind.slicing.DependencyMap;
-import jkind.slicing.LustreSlicer;
-import jkind.smv.SMVModule;
 import jkind.smv.SMVProgram;
-import jkind.smv.builders.SMVProgramBuilder;
+import jkind.smv.util.PreDistribution;
 import jkind.smv.util.SMVFlattenArrow;
-import jkind.smv.util.SMVInitNextEqn;
-import jkind.smv.util.SMVPreDistribution;
-import jkind.smv.visitors.SMV_Node2Module_Visitor;
+import jkind.smv.util.SMVRemoveArrow3;
+import jkind.smv.util.SMVRemovePre;
+import jkind.smv.visitors.SMVLustre2SMVVisitor;
+import jkind.translation.FlattenPres;
+import jkind.translation.InlineConstants;
+import jkind.translation.InlineEnumValues;
+import jkind.translation.InlineNodeCalls;
+import jkind.translation.InlineUserTypes;
+import jkind.translation.RemoveCondacts;
 import jkind.translation.RemoveEnumTypes;
-import jkind.translation.Translate;
+import jkind.translation.compound.FlattenCompoundTypes;
 import jkind.util.Util;
 
 public class JLustre2SMV {
@@ -27,28 +30,45 @@ public class JLustre2SMV {
 		try {
 			JLustre2SMVSettings settings = JLustre2SMVArgumentParser.parse(args);
 			String filename = settings.filename;
-
 			if (!filename.toLowerCase().endsWith(".lus")) {
 				StdErr.error("input file must have .lus extension");
 			}
 
+			String base = filename.substring(0, +filename.length() - 4);
+			String debugFileName = base + "_debug.lus";
+			String outFileName = base + ".smv";
+
 			Program program = Main.parseLustre(filename);
 			StaticAnalyzer.check(program, SolverOption.Z3, settings);
 
-			program = Translate.translate(program);
+			program = InlineEnumValues.program(program);
+			program = InlineUserTypes.program(program);
+			program = InlineConstants.program(program);
+			program = RemoveCondacts.program(program);
+			program = InlineNodeCalls.program(program);
+			program = FlattenCompoundTypes.program(program);
+			program = FlattenPres.program(program);
 			program = RemoveEnumTypes.program(program);
-			Node mainNode = program.getMainNode();
+			Node main = program.getMainNode();
 			// TODO: We need to think about how readable we want the SMV translation to be.
 			/*
-			 * At this point the program has the following structure * 1. There are no
-			 * constants 2. There are no typedefs 3. There could be functions 4. There is
-			 * one node called main.
+			 * At this point the program has the following structure 
+			 * 1. There are no constants 
+			 * 2. There are no typedefs 
+			 * 3. There could be functions 
+			 * 4. There is one node called main.
+			 * 5. Pres are not nested.
+			 * 6. Arrows are not nested.
+			 * 7. No contract, 
+			 * 8. No array, condact, record, or tuple expressions.
+			 * 9. No equation which has two variables on left side 
+			 * e.g. hold, state = testgen(reset, trueCond, falseCond)
 			 */
 
-			/* to generate a lus file with just one node (main node) */
+
 			// TODO: Think about slicing but I don't think we need this.
-			Node main = LustreSlicer.slice(mainNode,
-					new DependencyMap(mainNode, mainNode.properties, program.functions));
+			//Node main = LustreSlicer.slice(mainNode,
+			//		new DependencyMap(mainNode, mainNode.properties, program.functions));
 			if (settings.encode) {
 				main = new KindEncodeIdsVisitor().visit(main);
 			}
@@ -58,31 +78,53 @@ public class JLustre2SMV {
 			}
 			program = new ProgramBuilder(program).clearNodes().addNode(main).build();
 
-			String outFilenameLus = filename.substring(0, +filename.length() - 4) + "-debug" + ".lus";
+			if (settings.debug) {
+				if (settings.stdout) {
+					System.out.println(program.toString());
+				}else {
+					Util.writeToFile(program.toString(), new File(debugFileName));
+					System.out.println("Wrote " + debugFileName);
+				}
+			}
+			
+			/* Distributing pre, e.g., "pre(a and b)" get replaced with "pre a and pre b" */
+			program = PreDistribution.program(program);
+			/*
+			 * Removing pre, e.g., "x = pre a" get replaced with "x = _pre_a" and
+			 * "next(_pre_a) = a"
+			 */
+			program = SMVRemovePre.program(program);
+			/*
+			 * Flattening arrow, e.g., "y = (a -> b) -> c" get replaced with
+			 * "y = _smashed1 -> c" and "_smashed1 = a -> b "
+			 */
+			program = SMVFlattenArrow.program(program);
+
+			/*
+			 * Removing arrow from a Lustre file (replacing with ternary expression).
+			 * However, ternary expression does not belong to SMV AST. Need to think whether
+			 * ternary expr has to be included in SMV AST.
+			 */
+			// program = SMVRemoveArrow2.program(program);
+
+			/* translate to SMV */
+
+			SMVProgram smvprogram = SMVLustre2SMVVisitor.program(program);
+
+			/*
+			 * Removing arrow from a SMV file, e.g., "y = a -> b" get replaced with
+			 * "y = initState ? a : b" where flag = true means first state and flag = false
+			 * means all subsequent steps
+			 *
+			 */
+			smvprogram = SMVRemoveArrow3.program(smvprogram);
+
 			if (settings.stdout) {
 				System.out.println(program.toString());
 			} else {
-				Util.writeToFile(program.toString(), new File(outFilenameLus));
-				System.out.println("Wrote " + outFilenameLus);
+				Util.writeToFile(smvprogram.toString(), new File(outFileName));
+				System.out.println("Wrote " + outFileName);
 			}
-
-			/* Translation of the lus program (generated above) into SMV program */
-			SMVPreDistribution sfp = new SMVPreDistribution(program);
-			Node smvMainNode = sfp.node(program.getMainNode());
-
-			Program programForSMV = new ProgramBuilder().addNode(smvMainNode).build();
-
-			SMVFlattenArrow fa = new SMVFlattenArrow(programForSMV);
-			smvMainNode = fa.node(smvMainNode);
-
-			SMVProgram smvp = new SMVProgramBuilder(programForSMV).build();
-			SMVModule sMVModule = new SMV_Node2Module_Visitor().visit(smvMainNode);
-			smvp = new SMVProgramBuilder(smvp).addModule(sMVModule).build();
-			smvp = SMVInitNextEqn.program(smvp);
-			
-			String outFilenameSMV = filename.substring(0, filename.length() - 4) + ".smv";
-			Util.writeToFile(smvp.toString(), new File(outFilenameSMV));
-			System.out.println("Wrote " + outFilenameSMV);
 
 		} catch (Throwable t) {
 			t.printStackTrace();

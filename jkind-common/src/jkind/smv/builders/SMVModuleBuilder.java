@@ -63,6 +63,12 @@ public class SMVModuleBuilder {
 		this.inputs.add(local);
 		return this;
 	}
+	
+	public SMVModuleBuilder addLocals(List<SMVVarDecl> newLocals) {
+		this.inputs.addAll(newLocals);
+		return this;
+		
+	}
 
 	public SMVModuleBuilder addAssertion(SMVExpr assertion) {
 		this.assertions.add(assertion);
@@ -102,4 +108,6 @@ public class SMVModuleBuilder {
 	public SMVModule build() {
 		return new SMVModule(id, inputs, outputs, locals, equations, assertions, sMVSpecifications);
 	}
+
+	
 }
