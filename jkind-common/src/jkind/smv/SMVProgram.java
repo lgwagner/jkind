@@ -8,10 +8,12 @@ import jkind.util.Util;
 
 public class SMVProgram extends SMVAst {
 
+	public final List<SMVFunction> functions;
 	public final List<SMVModule> modules;
 	public final String main;
 
-	public SMVProgram(List<SMVModule> modules, String main) {
+	public SMVProgram(List<SMVFunction> functions, List<SMVModule> modules, String main) {
+		this.functions = Util.safeList(functions);
 		this.modules = Util.safeList(modules);
 		if (main == null && modules != null && modules.size() > 0) {
 			this.main = modules.get(modules.size() - 1).id;
@@ -21,7 +23,7 @@ public class SMVProgram extends SMVAst {
 	}
 
 	public SMVProgram(SMVModule... modules) {
-		this(Arrays.asList(modules), null);
+		this(null, Arrays.asList(modules), null);
 	}
 
 	public SMVModule getMainModule() {

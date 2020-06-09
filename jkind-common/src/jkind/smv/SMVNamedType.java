@@ -3,7 +3,7 @@ package jkind.smv;
 import jkind.Assert;
 import jkind.smv.visitors.SMVTypeVisitor;
 
-public class SMVNamedType extends SMVType{
+public class SMVNamedType extends SMVType {
 	public final String name;
 
 	public SMVNamedType(String name) {
@@ -14,14 +14,13 @@ public class SMVNamedType extends SMVType{
 		this.name = name;
 	}
 
-	
 	/*
 	 * Private constructor for built-in types
 	 */
 	private SMVNamedType(String name, @SuppressWarnings("unused") Object unused) {
 		this.name = name;
 	}
-	
+
 	@Override
 	public String toString() {
 		return name;
@@ -34,7 +33,7 @@ public class SMVNamedType extends SMVType{
 	public boolean isBuiltin() {
 		return this == REAL || this == BOOL || this == INT;
 	}
-	
+
 	public static SMVNamedType get(String name) {
 		switch (name) {
 		case "int":

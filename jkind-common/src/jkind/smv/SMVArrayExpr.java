@@ -11,7 +11,7 @@ public class SMVArrayExpr extends SMVExpr {
 	public SMVArrayExpr(List<SMVExpr> elements) {
 		this.elements = Util.safeList(elements);
 	}
-	
+
 	@Override
 	public <T> T accept(SMVExprVisitor<T> visitor) {
 		return visitor.visit(this);

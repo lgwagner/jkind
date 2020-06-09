@@ -3,7 +3,7 @@ package jkind.smv;
 import jkind.Assert;
 import jkind.smv.visitors.SMVTypeVisitor;
 
-public class SMVArrayType extends SMVType{
+public class SMVArrayType extends SMVType {
 	public final SMVType base;
 	public final int size;
 
@@ -14,7 +14,6 @@ public class SMVArrayType extends SMVType{
 		this.size = size;
 	}
 
-	
 	@Override
 	public String toString() {
 		return base + "[" + size + "]";

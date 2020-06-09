@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import jkind.Assert;
+import jkind.smv.util.SMVValidId;
 import jkind.smv.visitors.SMVExprVisitor;
 import jkind.util.Util;
 
@@ -14,12 +15,13 @@ public class SMVFunctionCallExpr extends SMVExpr {
 
 	public SMVFunctionCallExpr(String function, List<SMVExpr> args) {
 		Assert.isNotNull(function);
+		function = SMVValidId.replaceIllegalChar(function);
 		this.function = function;
 		this.args = Util.safeList(args);
 	}
-	
-	public SMVFunctionCallExpr(String nodeName, SMVExpr... args) {
-		this(nodeName, Arrays.asList(args));
+
+	public SMVFunctionCallExpr(String funName, SMVExpr... args) {
+		this(funName, Arrays.asList(args));
 	}
 
 	@Override

@@ -1,7 +1,7 @@
 package jkind.smv;
 
 import jkind.Assert;
-import jkind.smv.util.SMVUtil;
+import jkind.smv.util.SMVValidId;
 import jkind.smv.visitors.SMVAstVisitor;
 
 public class SMVVarDecl extends SMVAst {
@@ -12,7 +12,7 @@ public class SMVVarDecl extends SMVAst {
 		Assert.isNotNull(id);
 		Assert.isNotNull(type);
 
-		this.id = SMVUtil.replaceIllegalChar(id);
+		this.id = SMVValidId.replaceIllegalChar(id);
 		this.type = type;
 	}
 
@@ -20,7 +20,7 @@ public class SMVVarDecl extends SMVAst {
 		Assert.isNotNull(id);
 		Assert.isNotNull(type);
 
-		this.id = SMVUtil.replaceIllegalChar(id);
+		this.id = SMVValidId.replaceIllegalChar(id);
 		this.type = type;
 	}
 

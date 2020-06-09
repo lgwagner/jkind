@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import jkind.Assert;
+import jkind.smv.util.SMVValidId;
 import jkind.smv.visitors.SMVAstVisitor;
 import jkind.util.Util;
 
@@ -14,7 +15,7 @@ public class SMVFunction extends SMVAst {
 
 	public SMVFunction(String id, List<SMVVarDecl> inputs, List<SMVVarDecl> outputs) {
 		Assert.isNotNull(id);
-		this.id = id;
+		this.id = SMVValidId.replaceIllegalChar(id);
 		this.inputs = Util.safeList(inputs);
 		this.outputs = Util.safeList(outputs);
 	}
