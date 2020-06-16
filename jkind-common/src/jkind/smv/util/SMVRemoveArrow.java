@@ -47,7 +47,6 @@ public class SMVRemoveArrow extends TypeAwareAstMapVisitor {
 	}
 
 	private static Expr createTernaryExpr(Expr left, Expr right) {
-		//return new IdExpr("initState ? " + left.toString() + " : " + right.toString());
 		return new IfThenElseExpr(new IdExpr("initState"), left, right);
 	}
 
