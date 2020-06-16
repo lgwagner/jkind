@@ -12,7 +12,7 @@ import jkind.lustre.builders.ProgramBuilder;
 import jkind.smv.SMVProgram;
 import jkind.smv.util.PreDistribution;
 import jkind.smv.util.SMVFlattenArrow;
-import jkind.smv.util.SMVRemoveArrow3;
+import jkind.smv.util.SMVRemoveArrow;
 import jkind.smv.util.SMVRemovePre;
 import jkind.smv.visitors.SMVLustre2SMVVisitor;
 import jkind.translation.FlattenPres;
@@ -86,6 +86,8 @@ public class JLustre2SMV {
 					System.out.println("Wrote " + debugFileName);
 				}
 			}
+			/*Next four transformations generate the programs which might have constructs from Lustre and SMV both.
+			 * However, still extension will be ".lus".*/
 			
 			/* Distributing pre, e.g., "pre(a and b)" get replaced with "pre a and pre b" */
 			program = PreDistribution.program(program);
@@ -101,23 +103,25 @@ public class JLustre2SMV {
 			program = SMVFlattenArrow.program(program);
 
 			/*
-			 * Removing arrow from a Lustre file (replacing with ternary expression).
+			 * Removing arrow from a Lustre file (replacing arrow expression with ternary expression).
 			 * However, ternary expression does not belong to SMV AST. Need to think whether
 			 * ternary expr has to be included in SMV AST.
 			 */
-			// program = SMVRemoveArrow2.program(program);
+			/*
+			 * Removing arrow from a Lustre file (replacing arrow expression with CASE expression)
+			 * , e.g., "y = a -> b" get replaced with
+			 * "y = case
+			 * 			initState : a; 
+			 * 			TRUE      : b;
+			 *      esac;" 
+			 * where initState = true means first state and initState = false means all subsequent steps
+			 *
+			 */
+			program = SMVRemoveArrow.program(program);
 
 			/* translate to SMV */
 
 			SMVProgram smvprogram = SMVLustre2SMVVisitor.program(program);
-
-			/*
-			 * Removing arrow from a SMV file, e.g., "y = a -> b" get replaced with
-			 * "y = initState ? a : b" where flag = true means first state and flag = false
-			 * means all subsequent steps
-			 *
-			 */
-			smvprogram = SMVRemoveArrow3.program(smvprogram);
 
 			if (settings.stdout) {
 				System.out.println(program.toString());

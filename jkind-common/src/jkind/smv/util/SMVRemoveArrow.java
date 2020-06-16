@@ -9,6 +9,7 @@ import jkind.lustre.BoolExpr;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
+import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
@@ -16,10 +17,10 @@ import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
 import jkind.lustre.visitors.TypeAwareAstMapVisitor;
 
-public class SMVRemoveArrow2 extends TypeAwareAstMapVisitor {
+public class SMVRemoveArrow extends TypeAwareAstMapVisitor {
 
 	public static Program program(Program p) {
-		return new SMVRemoveArrow2().visit(p);
+		return new SMVRemoveArrow().visit(p);
 	}
 
 	private List<VarDecl> newLocals = new ArrayList<>();
@@ -46,7 +47,8 @@ public class SMVRemoveArrow2 extends TypeAwareAstMapVisitor {
 	}
 
 	private static Expr createTernaryExpr(Expr left, Expr right) {
-		return new IdExpr("initState ? " + left.toString() + " : " + right.toString());
+		//return new IdExpr("initState ? " + left.toString() + " : " + right.toString());
+		return new IfThenElseExpr(new IdExpr("initState"), left, right);
 	}
 
 }
